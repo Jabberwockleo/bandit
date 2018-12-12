@@ -7,7 +7,7 @@
 ########################################################################
 
 """
-File: thompson.py
+File: thompson_contextual.py
 Author: leowan(leowan)
 Date: 2018/12/7 16:14:36
 
@@ -42,13 +42,13 @@ class ThompsonSamplingContextual(object):
         self.R = R
         self.delta = delta
         self.epsilon = epsilon
-        
+
         self.B = np.identity(self.context_dimension)
         self.f = np.zeros(shape=(self.context_dimension, 1))
         self.mu_hat = np.zeros(shape=(self.context_dimension, 1))
         self.v = self.R * np.sqrt(24 / self.epsilon * self.context_dimension * np.log(1 / self.delta))
         self.sigma_squared_hat = self.v**2 * np.linalg.pinv(self.B)
-        
+
     def _inference(self, context):
         """
             Sample a possible reward from reward distribution
@@ -64,7 +64,7 @@ class ThompsonSamplingContextual(object):
         expected_reward = context.dot(self.mu_hat)
         dynamic_reward = context.dot(mu_tilde)
         return expected_reward, dynamic_reward
-    
+
     def _reward(self, context, reward):
         """
             Update model by observation
@@ -150,7 +150,7 @@ if __name__ == "__main__":
         b.feedback([xx], [ground_truth(xx)])
 
     print(b.mu_hat)
-    
+
     import matplotlib.pyplot as plt
     plt.hist([b._inference([1, 0, 0])[1][0] for i in range(1000)], alpha=0.5, bins=50)
     plt.hist([b._inference([0, 1, 0])[1][0] for i in range(1000)], alpha=0.5, bins=50)
