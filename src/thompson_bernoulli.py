@@ -7,14 +7,14 @@
 ########################################################################
 
 """
-File: thompson.py
+File: thompson_bernoulli.py
 Author: leowan(leowan)
 Date: 2018/12/7 16:14:36
 
 Reference:
     A Tutorial on Thompson Sampling
     https://web.stanford.edu/~bvr/pubs/TS_Tutorial.pdf
-    
+
     Beta Distribution
     https://en.wikipedia.org/wiki/Beta_distribution
 """
@@ -28,7 +28,7 @@ import pymc as pm
 KEY_PUBLISH = 'publish'
 KEY_CLICK = 'click'
 
-class ThompsonSampling(object):
+class ThompsonSamplingBernoulli(object):
     """
         Thompson Sampling for Bernoulli Bandit
     """
@@ -73,7 +73,7 @@ class ThompsonSampling(object):
             Record publish
         """
         self.action_record[action_name][KEY_PUBLISH] += 1
-        
+
     def record_click(self, action_name):
         """
             Record publish
@@ -94,7 +94,7 @@ class ThompsonSampling(object):
         return json.dumps(self.action_record)
 
 if __name__ == "__main__":
-    bandit = ThompsonSampling(['action_a', 'action_b', 'action_c'])
+    bandit = ThompsonSamplingBernoulli(['action_a', 'action_b', 'action_c'])
 
     chosen = bandit.choose()
     print('chosen: {}'.format(chosen))
@@ -108,7 +108,7 @@ if __name__ == "__main__":
     serialized = bandit.serialize()
     print('serialized: {}'.format(serialized))
 
-    new_bandit = ThompsonSampling([])
+    new_bandit = ThompsonSamplingBernoulli([])
     new_bandit.deserialize(serialized)
     chosen = bandit.choose()
     print('new chosen: {}'.format(chosen))
