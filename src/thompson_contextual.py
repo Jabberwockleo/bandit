@@ -106,13 +106,13 @@ class ThompsonSamplingContextual(object):
             Deserialize
         """
         model = json.loads(serialized)
+        self.context_dimension = model['dims']
         self.R = model['R']
         self.delta = model['delta']
         self.epsilon = model['epsilon']
-        self.context_dimension = model['dims']
-        self.B = np.array(model['B'])
-        self.mu_hat = np.array(model['mu_hat'])
-        self.f = np.array(model['f'])
+        self.B = np.array(model['B']).reshape([self.context_dimension, self.context_dimension])
+        self.mu_hat = np.array(model['mu_hat']).reshape([self.context_dimension, 1])
+        self.f = np.array(model['f']).reshape([self.context_dimension, 1])
         self.v = self.R * np.sqrt(24 / self.epsilon * self.context_dimension * np.log(1 / self.delta))
         self.mu_hat = np.linalg.pinv(self.B).dot(self.f)
         self.sigma_squared_hat = self.v**2 * np.linalg.pinv(self.B)
@@ -122,9 +122,9 @@ class ThompsonSamplingContextual(object):
             Serialize
         """
         model = {
-            'B': self.B.tolist(),
-            'mu_hat': self.mu_hat.tolist(),
-            'f': self.f.tolist(),
+            'B': self.B.ravel().tolist(),
+            'mu_hat': self.mu_hat.ravel().tolist(),
+            'f': self.f.ravel().tolist(),
             'R': self.R,
             'delta': self.delta,
             'epsilon': self.epsilon,
