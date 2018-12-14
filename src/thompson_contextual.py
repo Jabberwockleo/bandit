@@ -133,10 +133,17 @@ class ThompsonSamplingContextual(object):
         return json.dumps(model)
 
 if __name__ == "__main__":
+    from google.protobuf.json_format import MessageToJson
+    from google.protobuf.json_format import Parse
+    from contextual_model_pb2 import ContextualModel
+
     a = ThompsonSamplingContextual(context_dimension=3)
+
+    pb_obj = ContextualModel()
+    Parse(a.serialize(), pb_obj)
+
     b = ThompsonSamplingContextual(context_dimension=3)
-    b.deserialize(a.serialize())
-    assert b.serialize() == a.serialize()
+    b.deserialize(MessageToJson(pb_obj, preserving_proto_field_name=True))
 
     def ground_truth(x):
         """

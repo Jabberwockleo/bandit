@@ -1,0 +1,14 @@
+syntax = "proto2";
+option cc_generic_services = true;
+
+package rus.model;
+
+message ContextualModel {
+    required float R = 1; // R-sub-Gaussian parameter
+    required float delta = 2; // Regret bound satisfy probability is 1 - delta
+    required float epsilon = 3; // Sampling parameter
+    required int32 dims = 4; // Context dimension
+    repeated float mu_hat = 5; // Expected mu, flattened
+    repeated float f = 6; // Intermediate model parameter, flattened
+    repeated float B = 7; // Intermediate model parameter, flattened
+}
