@@ -15,9 +15,6 @@ Date: 2018/12/7 16:14:36
 import numpy as np
 import tensorflow as tf
 
-import numpy as np
-import tensorflow as tf
-
 class MultivariateNormalDistribution(object):
     """
         Multivariate Normal Distribution Sampling
@@ -46,7 +43,7 @@ class MultivariateNormalDistribution(object):
             mnd = tf.contrib.distributions.MultivariateNormalFullCovariance(
                 loc=self.mu,
                 covariance_matrix=tf.reshape(
-                    self.cov, [tf.shape(self.mu)[0], tf.shape(self.mu)[0]]))
+                    self.cov, [tf.shape(self.mu)[-1], tf.shape(self.mu)[-1]]))
             self.samples = mnd.sample()
             self.init_var_op = tf.global_variables_initializer()
     
