@@ -42,8 +42,10 @@ class MultivariateNormalDistribution(object):
             self._construct_placeholders()
             mnd = tf.contrib.distributions.MultivariateNormalFullCovariance(
                 loc=self.mu,
-                covariance_matrix=tf.reshape(
-                    self.cov, [tf.shape(self.mu)[-1], tf.shape(self.mu)[-1]]))
+                covariance_matrix = tf.reshape(
+                    self.cov,
+                    tf.concat([tf.shape(self.cov)[:-1], [tf.shape(self.mu)[-1], tf.shape(self.mu)[-1]]],
+                             axis = 0)))
             self.samples = mnd.sample()
             self.init_var_op = tf.global_variables_initializer()
     
