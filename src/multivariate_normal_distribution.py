@@ -75,9 +75,13 @@ class MultivariateNormalDistribution(object):
             builder.add_meta_graph_and_variables(sess,
                 [tf.saved_model.tag_constants.SERVING],
                 signature_def_map= {
-                    "model": tf.saved_model.signature_def_utils.build_signature_def(
-                        inputs= {"mu": tf.saved_model.utils.build_tensor_info(self.mu)},
-                        outputs= {"cov": tf.saved_model.utils.build_tensor_info(self.cov)})
+                    "serving_default": tf.saved_model.signature_def_utils.build_signature_def(
+                        inputs= {
+                            "mu": tf.saved_model.utils.build_tensor_info(self.mu),
+                            "cov": tf.saved_model.utils.build_tensor_info(self.cov)
+                        },
+                        outputs= {"samples": tf.saved_model.utils.build_tensor_info(self.samples)},
+                        method_name=tf.saved_model.signature_constants.PREDICT_METHOD_NAME)
                     })
             builder.save(as_text=False)
 
@@ -94,3 +98,19 @@ if __name__ == "__main__":
             [1.9702128918649626, 1.1395280221264217, -0.627184572276027],
             [0.00560475, -0.00378602, -0.00205141, -0.00378602, 0.00716149, -0.00093772, -0.00205141, -0.00093772, 0.00787278]))
     b.export(DIR)
+    
+    with tf.Session(graph=tf.Graph()) as sess:
+        meta_graph_def = tf.saved_model.loader.load(
+            sess, [tf.saved_model.tag_constants.SERVING], DIR)
+        signature = meta_graph_def.signature_def
+        a_tensor_name = signature["serving_default"].inputs["mu"].name
+        b_tensor_name = signature["serving_default"].inputs["cov"].name
+        s_tensor_name = signature["serving_default"].outputs["samples"].name
+        a_tensor = sess.graph.get_tensor_by_name(a_tensor_name)
+        b_tensor = sess.graph.get_tensor_by_name(b_tensor_name)
+        s_tensor = sess.graph.get_tensor_by_name(s_tensor_name)
+        for _ in range(10):
+            print(sess.run(s_tensor, feed_dict={
+                a_tensor: [1.9702128918649626, 1.1395280221264217, -0.627184572276027],
+                b_tensor: [0.00560475, -0.00378602, -0.00205141, -0.00378602, 0.00716149, -0.00093772, -0.00205141, -0.00093772, 0.00787278]
+            }))
