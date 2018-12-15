@@ -42,10 +42,10 @@ class MultivariateNormalDistribution(object):
             self._construct_placeholders()
             mnd = tf.contrib.distributions.MultivariateNormalFullCovariance(
                 loc=self.mu,
-                covariance_matrix = tf.reshape(
+                covariance_matrix=tf.reshape(
                     self.cov,
                     tf.concat([tf.shape(self.cov)[:-1], [tf.shape(self.mu)[-1], tf.shape(self.mu)[-1]]],
-                             axis = 0)))
+                             axis=0)))
             self.samples = mnd.sample()
             self.init_var_op = tf.global_variables_initializer()
     
@@ -73,13 +73,13 @@ class MultivariateNormalDistribution(object):
             builder = tf.saved_model.builder.SavedModelBuilder(export_dir)
             builder.add_meta_graph_and_variables(sess,
                 [tf.saved_model.tag_constants.SERVING],
-                signature_def_map= {
+                signature_def_map={
                     "serving_default": tf.saved_model.signature_def_utils.build_signature_def(
                         inputs= {
                             "mu": tf.saved_model.utils.build_tensor_info(self.mu),
                             "cov": tf.saved_model.utils.build_tensor_info(self.cov)
                         },
-                        outputs= {"samples": tf.saved_model.utils.build_tensor_info(self.samples)},
+                        outputs={"samples": tf.saved_model.utils.build_tensor_info(self.samples)},
                         method_name=tf.saved_model.signature_constants.PREDICT_METHOD_NAME)
                     })
             builder.save(as_text=False)

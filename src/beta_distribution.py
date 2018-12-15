@@ -68,13 +68,13 @@ class BetaDistribution(object):
             builder = tf.saved_model.builder.SavedModelBuilder(export_dir)
             builder.add_meta_graph_and_variables(sess,
                 [tf.saved_model.tag_constants.SERVING],
-                signature_def_map= {
+                signature_def_map={
                     "serving_default": tf.saved_model.signature_def_utils.build_signature_def(
-                        inputs= {
+                        inputs={
                             "alpha": tf.saved_model.utils.build_tensor_info(self.alpha),
                             "beta": tf.saved_model.utils.build_tensor_info(self.beta)
                         },
-                        outputs= {"samples": tf.saved_model.utils.build_tensor_info(self.samples)},
+                        outputs={"samples": tf.saved_model.utils.build_tensor_info(self.samples)},
                         method_name=tf.saved_model.signature_constants.PREDICT_METHOD_NAME)
                     })
             builder.save(as_text=False)
