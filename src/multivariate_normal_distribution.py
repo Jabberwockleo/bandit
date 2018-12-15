@@ -40,13 +40,18 @@ class MultivariateNormalDistribution(object):
         self.graph = tf.Graph()
         with self.graph.as_default():
             self._construct_placeholders()
-            mnd = tf.contrib.distributions.MultivariateNormalFullCovariance(
-                loc=self.mu,
+            elems = [tf.reshape(self.mu, [-1, tf.shape(self.mu)[-1]]),
+                     tf.reshape(self.cov, [-1, tf.shape(self.mu)[-1] * tf.shape(self.mu)[-1]])]
+            self.samples = tf.map_fn(
+                lambda x: tf.contrib.distributions.MultivariateNormalFullCovariance(
+                loc=x[0],
                 covariance_matrix=tf.reshape(
-                    self.cov,
-                    tf.concat([tf.shape(self.cov)[:-1], [tf.shape(self.mu)[-1], tf.shape(self.mu)[-1]]],
-                             axis=0)))
-            self.samples = mnd.sample()
+                    x[1],
+                    tf.concat([tf.shape(x[1])[:-1], [tf.shape(x[0])[-1], tf.shape(x[0])[-1]]],
+                             axis=0))).sample(),
+                elems,
+                dtype=tf.float32
+            )
             self.init_var_op = tf.global_variables_initializer()
     
     def _init_session(self):
